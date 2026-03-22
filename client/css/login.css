@@ -1,0 +1,105 @@
+#login-screen, #setup-screen {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+#particle-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+}
+
+.login-container {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 380px; padding: 40px 32px;
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+.login-logo { text-align: center; margin-bottom: 36px; }
+.logo-icon {
+    width: 56px; height: 56px; margin: 0 auto 12px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 900; color: #fff;
+    box-shadow: var(--shadow-glow);
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+.logo-text {
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 1px;
+}
+.logo-text span { color: var(--accent-light); }
+.logo-sub {
+    font-size: 0.7rem; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 3px; margin-top: 4px;
+}
+
+/* floating label inputs */
+.input-group {
+    position: relative; margin-bottom: 24px;
+}
+.input-group input {
+    width: 100%; padding: 14px 0 8px;
+    background: none; border: none; outline: none;
+    color: var(--text); font-size: 0.95rem;
+    border-bottom: 2px solid var(--border);
+    transition: border-color var(--transition);
+}
+.input-group label {
+    position: absolute; left: 0; top: 14px;
+    color: var(--text-muted); font-size: 0.9rem;
+    pointer-events: none;
+    transition: all var(--transition);
+}
+.input-group input:focus ~ label,
+.input-group input:valid ~ label {
+    top: -6px; font-size: 0.7rem; color: var(--accent-light);
+}
+.input-group input:focus {
+    border-bottom-color: var(--accent);
+}
+.input-line {
+    position: absolute; bottom: 0; left: 50%; width: 0; height: 2px;
+    background: var(--accent); transition: all 0.3s ease;
+}
+.input-group input:focus ~ .input-line {
+    width: 100%; left: 0;
+}
+
+/* login button */
+.btn-login {
+    position: relative; width: 100%; padding: 14px;
+    margin-top: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    color: #fff; font-weight: 600; font-size: 0.95rem;
+    border-radius: var(--radius); border: none;
+    cursor: pointer; overflow: hidden;
+    transition: var(--transition);
+}
+.btn-login:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+.btn-login:active { transform: scale(0.98); }
+.btn-pulse {
+    position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+    border-radius: 50%; background: rgba(255,255,255,0.2);
+    transform: translate(-50%, -50%);
+}
+
+/* error shake */
+.login-error { color: var(--red); font-size: 0.8rem; text-align: center; margin-top: 12px; min-height: 20px; }
+.shake { animation: shake 0.5s ease; }
+
+/* language switcher */
+.login-lang { display: flex; gap: 6px; justify-content: center; margin-top: 20px; }
+.lang-btn {
+    padding: 4px 10px; border-radius: var(--radius-sm);
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--text-muted); transition: var(--transition);
+    border: 1px solid transparent;
+}
+.lang-btn.active { color: var(--accent-light); border-color: var(--accent); }
+.lang-btn:hover { color: var(--text); }

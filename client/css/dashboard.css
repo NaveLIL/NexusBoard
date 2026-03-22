@@ -1,0 +1,6 @@
+/* dashboard-specific */
+#dashboard-screen { background: var(--bg); }
+
+#dashboard-screen.entering {
+    animation: zoom-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
