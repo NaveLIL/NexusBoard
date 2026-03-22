@@ -1,15 +1,37 @@
+// screens
+function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => {
+        s.classList.remove('active');
+        s.classList.remove('entering');
+    });
+    const target = document.getElementById(name + '-screen');
+    if (!target) return;
+    target.classList.add('active');
+
+    if (name === 'dashboard') {
+        target.classList.add('entering');
+        setupAuthUI();
+        startWidgets();
+        loadServices();
+        initSearch();
+    } else {
+        stopWidgets();
+    }
+
+    if (name === 'login' || name === 'setup') {
+        initParticles();
+    }
+}
+
 // main entry point
 (async function boot() {
-    // load language
     await loadLang(currentLang);
     applyTranslations();
 
-    // check if user is already logged in
     const authed = await checkAuth();
     if (authed) {
         showScreen('dashboard');
     } else {
-        // check if setup is needed (no users exist yet)
         try {
             const { needsSetup } = await fetch('/api/auth/status').then(r => r.json());
             showScreen(needsSetup ? 'setup' : 'login');
@@ -18,7 +40,7 @@
         }
     }
 
-    // wire up login form
+    // login form
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const user = document.getElementById('login-user').value.trim();
@@ -35,7 +57,16 @@
         }
         currentUser = data.user;
         if (data.user?.lang) setLang(data.user.lang);
-        showScreen('dashboard');
+
+        // fade out login, zoom in dashboard
+        const loginScreen = document.getElementById('login-screen');
+        loginScreen.style.transition = 'opacity 0.4s ease';
+        loginScreen.style.opacity = '0';
+        setTimeout(() => {
+            loginScreen.style.opacity = '';
+            loginScreen.style.transition = '';
+            showScreen('dashboard');
+        }, 400);
     });
 
     // setup form
@@ -65,23 +96,10 @@
         setLang(currentLang === 'ru' ? 'en' : 'ru');
     });
 
+    // admin panel button
+    document.getElementById('btn-admin')?.addEventListener('click', () => {
+        openAdminPanel();
+    });
+
     initParticles();
 })();
-
-function showScreen(name) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    const screen = document.getElementById(`${name}-screen`);
-    if (screen) {
-        screen.classList.add('active');
-        if (name === 'dashboard') {
-            screen.classList.add('entering');
-            setTimeout(() => screen.classList.remove('entering'), 700);
-            setupAuthUI();
-            loadServices();
-            startWidgets();
-            initSearch();
-        } else {
-            stopWidgets();
-        }
-    }
-}

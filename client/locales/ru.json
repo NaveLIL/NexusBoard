@@ -24,5 +24,35 @@
   "menu": {
     "admin": "Админ-панель",
     "logout": "Выйти"
+  },
+  "admin": {
+    "title": "Управление",
+    "services": "Сервисы",
+    "users": "Пользователи",
+    "audit": "Журнал",
+    "addService": "Добавить сервис",
+    "editService": "Редактировать сервис",
+    "noServices": "Сервисов пока нет",
+    "svcName": "Название",
+    "svcDesc": "Описание",
+    "svcIcon": "Иконка",
+    "svcCategory": "Категория",
+    "svcRole": "Мин. роль",
+    "svcHealthHint": "URL для проверки статуса",
+    "addUser": "Добавить пользователя",
+    "editUser": "Редактировать пользователя",
+    "username": "Логин",
+    "displayName": "Отображаемое имя",
+    "newPassword": "Новый пароль",
+    "leaveEmpty": "оставьте пустым, если не менять",
+    "role": "Роль",
+    "active": "Активен",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirmDelete": "Вы уверены?",
+    "auditUser": "Пользователь",
+    "auditAction": "Действие",
+    "auditIP": "IP",
+    "auditTime": "Время"
   }
 }

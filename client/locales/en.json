@@ -24,5 +24,35 @@
   "menu": {
     "admin": "Admin panel",
     "logout": "Sign out"
+  },
+  "admin": {
+    "title": "Management",
+    "services": "Services",
+    "users": "Users",
+    "audit": "Audit log",
+    "addService": "Add service",
+    "editService": "Edit service",
+    "noServices": "No services yet",
+    "svcName": "Name",
+    "svcDesc": "Description",
+    "svcIcon": "Icon",
+    "svcCategory": "Category",
+    "svcRole": "Min role",
+    "svcHealthHint": "URL for health check",
+    "addUser": "Add user",
+    "editUser": "Edit user",
+    "username": "Username",
+    "displayName": "Display name",
+    "newPassword": "New password",
+    "leaveEmpty": "leave empty to keep current",
+    "role": "Role",
+    "active": "Active",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirmDelete": "Are you sure?",
+    "auditUser": "User",
+    "auditAction": "Action",
+    "auditIP": "IP",
+    "auditTime": "Time"
   }
 }
