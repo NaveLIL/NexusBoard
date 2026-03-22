@@ -1,5 +1,10 @@
-/* dashboard-specific */
-#dashboard-screen { background: var(--bg); }
+#dashboard-screen {
+    background: var(--bg);
+    background-image:
+        radial-gradient(ellipse 80% 50% at 5% -10%, rgba(99, 102, 241, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 45% at 95% 105%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+    min-height: 100vh;
+}
 
 #dashboard-screen.entering {
     animation: zoom-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;

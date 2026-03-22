@@ -1,3 +1,37 @@
+const ICON_CDN = 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/svg';
+
+const ICON_SLUGS = {
+    'jellyfin': 'jellyfin', 'jellyseerr': 'jellyseerr', 'metube': 'metube',
+    'nextcloud': 'nextcloud', 'immich': 'immich', 'vaultwarden': 'vaultwarden',
+    'wiki.js': 'wiki-js', 'calibre web': 'calibre-web', 'kiwix': 'kiwix',
+    'freshrss': 'freshrss', 'crafty': 'crafty-4', 'retrogaming': 'emulatorjs',
+    'libretranslate': 'libretranslate', 'stirling pdf': 'stirling-pdf',
+    'excalidraw': 'excalidraw', 'tileserver gl': 'tileserver-gl',
+    'speedtest': 'openspeedtest', 'sonarr': 'sonarr', 'radarr': 'radarr',
+    'prowlarr': 'prowlarr', 'bazarr': 'bazarr', 'qbittorrent': 'qbittorrent',
+    'code server': 'code-server', 'gitea': 'gitea', 'it tools': 'it-tools',
+    'cyberchef': 'cyberchef', 'portainer': 'portainer', 'uptime kuma': 'uptime-kuma',
+    'grafana': 'grafana', 'authentik': 'authentik', 'node red': 'node-red',
+};
+
+const CATEGORY_COLORS = {
+    '\u043a\u0438\u043d\u043e \u0438 \u043c\u0435\u0434\u0438\u0430': '#6366f1',
+    '\u043e\u0431\u043b\u0430\u043a\u043e \u0438 \u0444\u043e\u0442\u043e': '#06b6d4',
+    '\u0437\u043d\u0430\u043d\u0438\u044f \u0438 \u043a\u043e\u043d\u0442\u0435\u043d\u0442': '#eab308',
+    '\u0438\u0433\u0440\u044b': '#ef4444',
+    '\u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b': '#22c55e',
+    '\u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f \u043c\u0435\u0434\u0438\u0430': '#f97316',
+    '\u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0430': '#8b5cf6',
+    '\u0441\u0438\u0441\u0442\u0435\u043c\u0430': '#94a3b8',
+};
+
+function resolveIcon(svc) {
+    if (svc.icon && (svc.icon.startsWith('http') || svc.icon.startsWith('/'))) return svc.icon;
+    const slug = ICON_SLUGS[svc.name.toLowerCase()];
+    if (slug) return `${ICON_CDN}/${slug}.svg`;
+    return null;
+}
+
 async function loadServices() {
     const wrap = document.getElementById('services-wrap');
     const data = await api.get('/services');
@@ -24,6 +58,8 @@ async function loadServices() {
         const group = document.createElement('div');
         group.className = 'category-group';
         group.innerHTML = `<h3 class="category-title">${escapeHtml(catName)}</h3>`;
+        const catColor = CATEGORY_COLORS[catName.toLowerCase()];
+        if (catColor) group.style.setProperty('--cat-color', catColor);
 
         const grid = document.createElement('div');
         grid.className = 'services-grid';
@@ -36,23 +72,35 @@ async function loadServices() {
             card.rel = 'noopener';
             card.draggable = true;
             card.dataset.serviceId = svc.id;
+            card.dataset.health = svc.health || 'unknown';
             card.style.animationDelay = `${delay}ms`;
-            delay += 40;
+            delay += 25;
 
-            const iconContent = svc.icon
-                ? (svc.icon.startsWith('http') || svc.icon.startsWith('/')
-                    ? `<img src="${escapeHtml(svc.icon)}" alt="">`
-                    : svc.icon)
-                : svc.name[0]?.toUpperCase() || '?';
+            const iconUrl = resolveIcon(svc);
+            const letter = svc.name[0]?.toUpperCase() || '?';
+            let iconHtml;
+            if (iconUrl) {
+                iconHtml = `<img src="${escapeHtml(iconUrl)}" alt="" loading="lazy">`;
+            } else if (svc.icon && svc.icon.length <= 4) {
+                iconHtml = svc.icon;
+            } else {
+                iconHtml = `<span class="icon-letter">${letter}</span>`;
+            }
 
             card.innerHTML = `
-                <div class="svc-icon">${iconContent}</div>
+                <div class="svc-icon">${iconHtml}</div>
                 <div class="svc-body">
                     <div class="svc-name">${escapeHtml(svc.name)}</div>
                     <div class="svc-desc">${escapeHtml(svc.description)}</div>
                 </div>
-                <div class="svc-status ${svc.health}"></div>
+                <div class="svc-status ${svc.health || 'unknown'}"></div>
             `;
+
+            const img = card.querySelector('.svc-icon img');
+            if (img) img.onerror = function() {
+                this.parentElement.innerHTML = `<span class="icon-letter">${letter}</span>`;
+            };
+
             grid.appendChild(card);
         }
 
