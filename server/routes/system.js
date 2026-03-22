@@ -18,9 +18,18 @@ function getCpuUsage() {
 
 function getDiskUsage() {
     try {
-        const out = execSync('df -h / --output=size,used,avail,pcent | tail -1', { timeout: 3000 }).toString().trim();
+        const out = execSync('df -h / | tail -1', { timeout: 3000 }).toString().trim();
         const parts = out.split(/\s+/);
-        return { total: parts[0], used: parts[1], free: parts[2], percent: parseInt(parts[3]) };
+        // handles both GNU coreutils and BusyBox df
+        // GNU: Filesystem Size Used Avail Use% Mounted
+        // BusyBox: Filesystem Size Used Available Use% Mounted
+        const sizeIdx = 1, usedIdx = 2, freeIdx = 3, pctIdx = 4;
+        return {
+            total: parts[sizeIdx] || '?',
+            used: parts[usedIdx] || '?',
+            free: parts[freeIdx] || '?',
+            percent: parseInt(parts[pctIdx]) || 0,
+        };
     } catch {
         return { total: '?', used: '?', free: '?', percent: 0 };
     }
