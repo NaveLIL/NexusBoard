@@ -125,6 +125,13 @@ router.get('/me', requireAuth, (req, res) => {
     res.json(user);
 });
 
+// GET /api/auth/status — check if setup is needed
+router.get('/status', (req, res) => {
+    const db = getDb();
+    const count = db.prepare('SELECT COUNT(*) as c FROM users').get();
+    res.json({ needsSetup: count.c === 0 });
+});
+
 // POST /api/auth/setup — create first superadmin (only works when no users exist)
 router.post('/setup', (req, res) => {
     const db = getDb();

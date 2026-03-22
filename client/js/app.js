@@ -11,18 +11,8 @@
     } else {
         // check if setup is needed (no users exist yet)
         try {
-            const probe = await fetch('/api/auth/setup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({}),
-            }).then(r => r.json());
-            // if 'setup already complete' — users exist, show login
-            // if 'username and password required' — no users, show setup
-            if (probe.error === 'setup already complete') {
-                showScreen('login');
-            } else {
-                showScreen('setup');
-            }
+            const { needsSetup } = await fetch('/api/auth/status').then(r => r.json());
+            showScreen(needsSetup ? 'setup' : 'login');
         } catch {
             showScreen('login');
         }
