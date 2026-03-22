@@ -27,7 +27,10 @@ async function checkAll() {
     `);
 
     for (const svc of services) {
-        const target = svc.health_url ? decrypt(svc.health_url) : decrypt(svc.url);
+        let target = '';
+        try {
+            target = (svc.health_url && svc.health_url.length > 0) ? decrypt(svc.health_url) : decrypt(svc.url);
+        } catch { /* bad encrypted data */ }
         if (!target) {
             upsert.run(svc.id, 'unknown', null);
             continue;

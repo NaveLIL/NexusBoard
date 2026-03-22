@@ -22,14 +22,18 @@ function encrypt(plaintext) {
 
 function decrypt(packed) {
     if (!packed) return '';
-    const parts = packed.split(':');
-    if (parts.length !== 3) throw new Error('bad encrypted format');
-    const iv = Buffer.from(parts[0], 'base64');
-    const tag = Buffer.from(parts[1], 'base64');
-    const enc = Buffer.from(parts[2], 'base64');
-    const decipher = crypto.createDecipheriv(ALG, getKey(), iv);
-    decipher.setAuthTag(tag);
-    return decipher.update(enc, null, 'utf8') + decipher.final('utf8');
+    try {
+        const parts = packed.split(':');
+        if (parts.length !== 3) return '';
+        const iv = Buffer.from(parts[0], 'base64');
+        const tag = Buffer.from(parts[1], 'base64');
+        const enc = Buffer.from(parts[2], 'base64');
+        const decipher = crypto.createDecipheriv(ALG, getKey(), iv);
+        decipher.setAuthTag(tag);
+        return decipher.update(enc, null, 'utf8') + decipher.final('utf8');
+    } catch {
+        return '';
+    }
 }
 
 module.exports = { encrypt, decrypt };
