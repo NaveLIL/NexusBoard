@@ -14,6 +14,8 @@ function showScreen(name) {
         startWidgets();
         loadServices();
         initSearch();
+        initDragDrop();
+        initNotifications();
     } else {
         stopWidgets();
     }

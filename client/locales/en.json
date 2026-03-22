@@ -21,6 +21,13 @@
     "disk": "Disk",
     "uptime": "Uptime"
   },
+  "notifications": {
+    "empty": "No notifications",
+    "now": "just now",
+    "min": "m ago",
+    "hr": "h ago",
+    "day": "d ago"
+  },
   "menu": {
     "admin": "Admin panel",
     "logout": "Sign out"

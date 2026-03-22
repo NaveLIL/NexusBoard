@@ -104,3 +104,30 @@
 
 /* loading */
 .loading-text { text-align: center; color: var(--text-muted); padding: 40px; }
+
+/* drag & drop */
+.service-card.dragging { opacity: 0.4; transform: scale(0.95); }
+.drag-placeholder {
+    border: 2px dashed var(--accent-glow); border-radius: var(--radius);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* notifications dropdown */
+.notif-dropdown {
+    display: none; position: absolute; right: 0; top: 44px;
+    width: 300px; max-height: 400px; overflow-y: auto;
+    background: var(--bg-card); backdrop-filter: blur(16px);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); z-index: 200;
+    scrollbar-width: thin;
+}
+.notif-dropdown.open { display: block; }
+.notif-empty, .notif-loading { padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.85rem; }
+.notif-item {
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+    cursor: pointer; transition: var(--transition);
+}
+.notif-item:hover { background: var(--bg-input); }
+.notif-item.unread { border-left: 3px solid var(--accent); }
+.notif-text { font-size: 0.82rem; line-height: 1.3; }
+.notif-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }

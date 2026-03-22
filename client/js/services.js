@@ -34,6 +34,8 @@ async function loadServices() {
             card.href = svc.url;
             card.target = '_blank';
             card.rel = 'noopener';
+            card.draggable = true;
+            card.dataset.serviceId = svc.id;
             card.style.animationDelay = `${delay}ms`;
             delay += 40;
 
