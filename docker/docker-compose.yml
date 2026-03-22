@@ -6,7 +6,7 @@ services:
     container_name: nexusboard
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3050:3000"
     volumes:
       - nexusboard_data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
