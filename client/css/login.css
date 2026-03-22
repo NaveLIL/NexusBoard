@@ -1,4 +1,4 @@
-#login-screen, #setup-screen {
+#login-screen.active, #setup-screen.active {
     position: relative;
     display: flex; align-items: center; justify-content: center;
     background: var(--bg);

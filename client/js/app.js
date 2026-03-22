@@ -58,7 +58,7 @@ function showScreen(name) {
         currentUser = data.user;
         if (data.user?.lang) setLang(data.user.lang);
 
-        // fade out login, zoom in dashboard
+        // fade out login, then switch to dashboard
         const loginScreen = document.getElementById('login-screen');
         loginScreen.style.transition = 'opacity 0.4s ease';
         loginScreen.style.opacity = '0';
