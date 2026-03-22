@@ -1,0 +1,21 @@
+{
+  "name": "nexusboard",
+  "version": "0.1.0",
+  "description": "Self-hosted server dashboard with auth, encryption and role-based access",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "author": "NaveLIL",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "better-sqlite3": "^11.7.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "express-rate-limit": "^7.5.0"
+  }
+}
