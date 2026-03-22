@@ -1,28 +1,28 @@
 {
-    "login": {
-        "username": "Username",
-        "password": "Password",
-        "submit": "Sign in",
-        "error": "Invalid username or password"
-    },
-    "setup": {
-        "title": "Initial setup",
-        "username": "Admin username",
-        "display": "Display name",
-        "password": "Password (min 8 chars)",
-        "submit": "Create account"
-    },
-    "dashboard": {
-        "search": "Search services...",
-        "loading": "Loading...",
-        "noResults": "Nothing found"
-    },
-    "widgets": {
-        "disk": "Disk",
-        "uptime": "Uptime"
-    },
-    "menu": {
-        "admin": "Admin panel",
-        "logout": "Sign out"
-    }
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in",
+    "error": "Invalid username or password"
+  },
+  "setup": {
+    "title": "Initial setup",
+    "username": "Admin username",
+    "display": "Display name",
+    "password": "Password (min 8 chars)",
+    "submit": "Create account"
+  },
+  "dashboard": {
+    "search": "Search services...",
+    "loading": "Loading...",
+    "noResults": "Nothing found"
+  },
+  "widgets": {
+    "disk": "Disk",
+    "uptime": "Uptime"
+  },
+  "menu": {
+    "admin": "Admin panel",
+    "logout": "Sign out"
+  }
 }
