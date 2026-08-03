@@ -104,6 +104,4 @@ function showScreen(name) {
     document.getElementById('btn-admin')?.addEventListener('click', () => {
         openAdminPanel();
     });
-
-    initParticles();
 })();
