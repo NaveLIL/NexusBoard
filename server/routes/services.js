@@ -25,20 +25,26 @@ router.get('/', requireAuth, (req, res) => {
     // filter by role and decrypt urls
     const filtered = services
         .filter(s => userLevel >= (ROLE_LEVEL[s.min_role] ?? 0))
-        .map(s => ({
-            id: s.id,
-            name: s.name,
-            description: s.description,
-            url: decrypt(s.url),
-            icon: s.icon,
-            category: s.category_name || 'Прочее',
-            categoryIcon: s.category_icon || 'grid',
-            categoryOrder: s.category_order ?? 99,
-            sortOrder: s.sort_order,
-            health: s.health_status || 'unknown',
-            latency: s.latency_ms,
-            checkedAt: s.checked_at,
-        }));
+        .map(s => {
+            const mapped = {
+                id: s.id,
+                name: s.name,
+                description: s.description,
+                url: decrypt(s.url),
+                icon: s.icon,
+                category: s.category_name || 'Прочее',
+                categoryIcon: s.category_icon || 'grid',
+                categoryOrder: s.category_order ?? 99,
+                sortOrder: s.sort_order,
+                health: s.health_status || 'unknown',
+                latency: s.latency_ms,
+                checkedAt: s.checked_at,
+            };
+            if (userLevel >= ROLE_LEVEL.admin) {
+                mapped.healthUrl = s.health_url ? decrypt(s.health_url) : '';
+            }
+            return mapped;
+        });
 
     // check for per-user order overrides
     const overrides = db.prepare(
@@ -99,7 +105,7 @@ router.put('/:id', requireAuth, requireRole('admin'), (req, res) => {
         category_id !== undefined ? category_id : existing.category_id,
         min_role ?? existing.min_role,
         sort_order ?? existing.sort_order,
-        health_url ? encrypt(health_url) : existing.health_url,
+        health_url !== undefined ? (health_url ? encrypt(health_url) : '') : existing.health_url,
         api_key ? encrypt(api_key) : existing.api_key,
         visible !== undefined ? (visible ? 1 : 0) : existing.visible,
         req.params.id

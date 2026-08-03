@@ -37,7 +37,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 
 // trust proxy for x-forwarded-for
-app.set('trust proxy', 1);
+app.set('trust proxy', config.trustProxy);
 
 // static files (client)
 app.use(express.static(path.join(__dirname, '..', 'client')));

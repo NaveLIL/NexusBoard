@@ -106,7 +106,7 @@ async function renderServicesTab(body) {
 
 function serviceRow(s) {
     return `<div class="admin-row">
-        <div class="admin-row-icon">${s.icon || s.name[0]?.toUpperCase() || '?'}</div>
+        <div class="admin-row-icon">${escapeHtml(s.icon || s.name[0]?.toUpperCase() || '?')}</div>
         <div class="admin-row-info">
             <strong>${escapeHtml(s.name)}</strong>
             <small>${escapeHtml(s.category || '')}</small>
@@ -141,7 +141,7 @@ function showServiceModal(existing) {
             <label>${t('admin.svcIcon')}<input type="text" name="icon" value="${escapeHtml(existing?.icon || '')}" placeholder="🖥️ / URL"></label>
             <label>${t('admin.svcCategory')}<select name="category_id">${catOptions}</select></label>
             <label>${t('admin.svcRole')}<select name="min_role">${roleOptions}</select></label>
-            <label>Health URL<input type="url" name="health_url" value="" placeholder="${t('admin.svcHealthHint')}"></label>
+            <label>Health URL<input type="url" name="health_url" value="${escapeHtml(existing?.healthUrl || '')}" placeholder="${t('admin.svcHealthHint')}"></label>
             <div class="modal-actions">
                 <button type="button" class="admin-btn-cancel" id="modal-cancel">${t('admin.cancel')}</button>
                 <button type="submit" class="admin-btn-save">${t('admin.save')}</button>
@@ -168,7 +168,7 @@ function showServiceModal(existing) {
             icon: fd.get('icon'),
             category_id: parseInt(fd.get('category_id')) || null,
             min_role: fd.get('min_role'),
-            health_url: fd.get('health_url') || undefined,
+            health_url: fd.get('health_url'),
         };
 
         const res = editing
@@ -221,10 +221,10 @@ async function renderUsersTab(body) {
 function userRow(u) {
     const roleBadge = u.role === 'superadmin' ? 'admin-badge-sa' : '';
     return `<div class="admin-row">
-        <div class="admin-row-icon" style="font-size:14px">${u.display?.[0]?.toUpperCase() || '?'}</div>
+        <div class="admin-row-icon" style="font-size:14px">${escapeHtml(u.display?.[0]?.toUpperCase() || '?')}</div>
         <div class="admin-row-info">
             <strong>${escapeHtml(u.display || u.username)}</strong>
-            <small class="${roleBadge}">${u.role}${u.active ? '' : ' (disabled)'}</small>
+            <small class="${roleBadge}">${escapeHtml(u.role)}${u.active ? '' : ' (disabled)'}</small>
         </div>
         <div class="admin-row-actions">
             <button class="admin-btn-sm usr-edit" data-id="${u.id}">✎</button>

@@ -82,9 +82,9 @@ async function loadServices() {
             if (iconUrl) {
                 iconHtml = `<img src="${escapeHtml(iconUrl)}" alt="" loading="lazy">`;
             } else if (svc.icon && svc.icon.length <= 4) {
-                iconHtml = svc.icon;
+                iconHtml = escapeHtml(svc.icon);
             } else {
-                iconHtml = `<span class="icon-letter">${letter}</span>`;
+                iconHtml = `<span class="icon-letter">${escapeHtml(letter)}</span>`;
             }
 
             card.innerHTML = `
@@ -93,12 +93,12 @@ async function loadServices() {
                     <div class="svc-name">${escapeHtml(svc.name)}</div>
                     <div class="svc-desc">${escapeHtml(svc.description)}</div>
                 </div>
-                <div class="svc-status ${svc.health || 'unknown'}"></div>
+                <div class="svc-status ${escapeHtml(svc.health || 'unknown')}"></div>
             `;
 
             const img = card.querySelector('.svc-icon img');
             if (img) img.onerror = function() {
-                this.parentElement.innerHTML = `<span class="icon-letter">${letter}</span>`;
+                this.parentElement.innerHTML = `<span class="icon-letter">${escapeHtml(letter)}</span>`;
             };
 
             grid.appendChild(card);
@@ -126,7 +126,10 @@ function filterServices(query) {
 
 function escapeHtml(str) {
     if (!str) return '';
-    const el = document.createElement('span');
-    el.textContent = str;
-    return el.innerHTML;
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
