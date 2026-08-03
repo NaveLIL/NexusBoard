@@ -18,17 +18,27 @@ function signAccess(user) {
     );
 }
 
+// Note: This hashing invalidates any existing refresh tokens, so all current sessions are logged out on deploy.
+function hashToken(raw) {
+    return crypto.createHash('sha256').update(raw).digest('hex');
+}
+
 function createRefresh(userId) {
     const db = getDb();
     const token = crypto.randomBytes(40).toString('hex');
+    const tokenHash = hashToken(token);
     const expires = new Date(Date.now() + config.jwtRefreshDays * 86400000).toISOString();
-    db.prepare('INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)').run(userId, token, expires);
+
+    // delete expired tokens
+    db.prepare('DELETE FROM refresh_tokens WHERE user_id = ? AND expires_at < ?').run(userId, new Date().toISOString());
+
+    db.prepare('INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES (?, ?, ?)').run(userId, tokenHash, expires);
     return { token, expires };
 }
 
 function logAction(userId, action, detail, req) {
     const db = getDb();
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+    const ip = req.ip || '';
     const ua = req.headers['user-agent'] || '';
     db.prepare('INSERT INTO audit_log (user_id, action, detail, ip, ua) VALUES (?, ?, ?, ?, ?)').run(userId, action, detail, ip, ua);
 }
@@ -78,7 +88,8 @@ router.post('/refresh', (req, res) => {
     if (!token) return res.status(401).json({ error: 'no refresh token' });
 
     const db = getDb();
-    const row = db.prepare('SELECT * FROM refresh_tokens WHERE token = ?').get(token);
+    const tokenHash = hashToken(token);
+    const row = db.prepare('SELECT * FROM refresh_tokens WHERE token = ?').get(tokenHash);
     if (!row || new Date(row.expires_at) < new Date()) {
         if (row) db.prepare('DELETE FROM refresh_tokens WHERE id = ?').run(row.id);
         return res.status(401).json({ error: 'expired or invalid refresh token' });
@@ -110,7 +121,8 @@ router.post('/logout', requireAuth, (req, res) => {
     const token = req.cookies?.refresh_token;
     if (token) {
         const db = getDb();
-        db.prepare('DELETE FROM refresh_tokens WHERE token = ?').run(token);
+        const tokenHash = hashToken(token);
+        db.prepare('DELETE FROM refresh_tokens WHERE token = ?').run(tokenHash);
     }
     logAction(req.user.id, 'logout', '', req);
     res.clearCookie('refresh_token', { path: '/api/auth' });

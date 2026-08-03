@@ -43,8 +43,15 @@ if (!fs.existsSync(envPath)) {
 ensureSecret('MASTER_KEY', 32);
 ensureSecret('JWT_SECRET', 48);
 
+// process trust proxy value
+let trustProxyVal = env('TRUST_PROXY', '1');
+if (/^\d+$/.test(trustProxyVal)) {
+    trustProxyVal = Number(trustProxyVal);
+}
+
 module.exports = {
     port: parseInt(env('PORT', '3000'), 10),
+    trustProxy: trustProxyVal,
     masterKey: env('MASTER_KEY'),
     jwtSecret: env('JWT_SECRET'),
     jwtAccessTTL: '15m',

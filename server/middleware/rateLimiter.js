@@ -6,7 +6,6 @@ const loginLimiter = rateLimit({
     message: { error: 'too many login attempts, try again later' },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => req.headers['x-forwarded-for'] || req.socket.remoteAddress,
 });
 
 const apiLimiter = rateLimit({

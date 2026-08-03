@@ -1,6 +1,8 @@
 const express = require('express');
 const os = require('os');
-const { execSync } = require('child_process');
+const { execSync, exec } = require('child_process');
+const util = require('util');
+const execAsync = util.promisify(exec);
 const { requireAuth } = require('../middleware/auth');
 const { requireRole } = require('../middleware/rbac');
 
@@ -16,9 +18,10 @@ function getCpuUsage() {
     return Math.round((1 - totalIdle / totalTick) * 100);
 }
 
-function getDiskUsage() {
+async function getDiskUsage() {
     try {
-        const out = execSync('df -h / | tail -1', { timeout: 3000 }).toString().trim();
+        const { stdout } = await execAsync('df -h / | tail -1', { timeout: 3000 });
+        const out = stdout.trim();
         const parts = out.split(/\s+/);
         // handles both GNU coreutils and BusyBox df
         // GNU: Filesystem Size Used Avail Use% Mounted
@@ -56,13 +59,21 @@ function getDockerContainers() {
     }
 }
 
+let sysCache = { data: null, timestamp: 0 };
+
 // GET /api/system — server metrics (member+)
-router.get('/', requireAuth, requireRole('member'), (req, res) => {
+router.get('/', requireAuth, requireRole('member'), async (req, res) => {
+    if (Date.now() - sysCache.timestamp < 5000 && sysCache.data) {
+        return res.json(sysCache.data);
+    }
+
     const mem = { total: os.totalmem(), free: os.freemem() };
     mem.used = mem.total - mem.free;
     mem.percent = Math.round((mem.used / mem.total) * 100);
 
-    res.json({
+    const disk = await getDiskUsage();
+
+    sysCache.data = {
         hostname: os.hostname(),
         platform: os.platform(),
         arch: os.arch(),
@@ -77,10 +88,13 @@ router.get('/', requireAuth, requireRole('member'), (req, res) => {
             free: (mem.free / 1073741824).toFixed(1) + ' GB',
             percent: mem.percent,
         },
-        disk: getDiskUsage(),
+        disk,
         uptime: getUptime(),
         loadavg: os.loadavg().map(l => l.toFixed(2)),
-    });
+    };
+    sysCache.timestamp = Date.now();
+
+    res.json(sysCache.data);
 });
 
 // GET /api/system/docker — docker containers (admin+)

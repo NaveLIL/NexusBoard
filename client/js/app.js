@@ -16,8 +16,10 @@ function showScreen(name) {
         initSearch();
         initDragDrop();
         initNotifications();
+        stopParticles();
     } else {
         stopWidgets();
+        stopNotifications();
     }
 
     if (name === 'login' || name === 'setup') {
@@ -102,6 +104,4 @@ function showScreen(name) {
     document.getElementById('btn-admin')?.addEventListener('click', () => {
         openAdminPanel();
     });
-
-    initParticles();
 })();

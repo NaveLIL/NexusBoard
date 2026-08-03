@@ -25,20 +25,26 @@ router.get('/', requireAuth, (req, res) => {
     // filter by role and decrypt urls
     const filtered = services
         .filter(s => userLevel >= (ROLE_LEVEL[s.min_role] ?? 0))
-        .map(s => ({
-            id: s.id,
-            name: s.name,
-            description: s.description,
-            url: decrypt(s.url),
-            icon: s.icon,
-            category: s.category_name || 'Прочее',
-            categoryIcon: s.category_icon || 'grid',
-            categoryOrder: s.category_order ?? 99,
-            sortOrder: s.sort_order,
-            health: s.health_status || 'unknown',
-            latency: s.latency_ms,
-            checkedAt: s.checked_at,
-        }));
+        .map(s => {
+            const mapped = {
+                id: s.id,
+                name: s.name,
+                description: s.description,
+                url: decrypt(s.url),
+                icon: s.icon,
+                category: s.category_name || 'Прочее',
+                categoryIcon: s.category_icon || 'grid',
+                categoryOrder: s.category_order ?? 99,
+                sortOrder: s.sort_order,
+                health: s.health_status || 'unknown',
+                latency: s.latency_ms,
+                checkedAt: s.checked_at,
+            };
+            if (userLevel >= ROLE_LEVEL.admin) {
+                mapped.healthUrl = s.health_url ? decrypt(s.health_url) : '';
+            }
+            return mapped;
+        });
 
     // check for per-user order overrides
     const overrides = db.prepare(
@@ -56,10 +62,24 @@ router.get('/', requireAuth, (req, res) => {
     res.json(filtered);
 });
 
+// Helper to validate URL
+function isValidUrl(str) {
+    if (!str) return true; // allow empty for health_url clear
+    try {
+        const u = new URL(str);
+        return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+        return false;
+    }
+}
+
 // POST /api/services — create (admin+)
 router.post('/', requireAuth, requireRole('admin'), (req, res) => {
     const { name, description, url, icon, category_id, min_role, sort_order, health_url, api_key } = req.body;
     if (!name || !url) return res.status(400).json({ error: 'name and url required' });
+    if (!isValidUrl(url) || !isValidUrl(health_url)) {
+        return res.status(400).json({ error: 'invalid url scheme' });
+    }
 
     const db = getDb();
     const result = db.prepare(`
@@ -87,6 +107,9 @@ router.put('/:id', requireAuth, requireRole('admin'), (req, res) => {
     if (!existing) return res.status(404).json({ error: 'not found' });
 
     const { name, description, url, icon, category_id, min_role, sort_order, health_url, api_key, visible } = req.body;
+    if ((url !== undefined && !isValidUrl(url)) || (health_url !== undefined && !isValidUrl(health_url))) {
+        return res.status(400).json({ error: 'invalid url scheme' });
+    }
 
     db.prepare(`
         UPDATE services SET name=?, description=?, url=?, icon=?, category_id=?,
@@ -99,7 +122,7 @@ router.put('/:id', requireAuth, requireRole('admin'), (req, res) => {
         category_id !== undefined ? category_id : existing.category_id,
         min_role ?? existing.min_role,
         sort_order ?? existing.sort_order,
-        health_url ? encrypt(health_url) : existing.health_url,
+        health_url !== undefined ? (health_url ? encrypt(health_url) : '') : existing.health_url,
         api_key ? encrypt(api_key) : existing.api_key,
         visible !== undefined ? (visible ? 1 : 0) : existing.visible,
         req.params.id
