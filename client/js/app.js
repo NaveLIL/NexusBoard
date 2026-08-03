@@ -16,8 +16,10 @@ function showScreen(name) {
         initSearch();
         initDragDrop();
         initNotifications();
+        if (typeof stopParticles === 'function') stopParticles();
     } else {
         stopWidgets();
+        if (typeof stopNotifications === 'function') stopNotifications();
     }
 
     if (name === 'login' || name === 'setup') {

@@ -1,19 +1,34 @@
 // notifications dropdown
 let notifOpen = false;
+let notifTimer = null;
+let notifClickListenerAttached = false;
 
 function initNotifications() {
+    stopNotifications();
+
     const bell = document.getElementById('btn-notifications');
     if (!bell) return;
 
     bell.addEventListener('click', toggleNotifDropdown);
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('#btn-notifications') && !e.target.closest('#notif-dropdown')) {
-            closeNotifDropdown();
-        }
-    });
+
+    if (!notifClickListenerAttached) {
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#btn-notifications') && !e.target.closest('#notif-dropdown')) {
+                closeNotifDropdown();
+            }
+        });
+        notifClickListenerAttached = true;
+    }
 
     pollNotifications();
-    setInterval(pollNotifications, 30000);
+    notifTimer = setInterval(pollNotifications, 30000);
+}
+
+function stopNotifications() {
+    if (notifTimer) {
+        clearInterval(notifTimer);
+        notifTimer = null;
+    }
 }
 
 async function pollNotifications() {

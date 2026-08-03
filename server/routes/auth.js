@@ -28,7 +28,7 @@ function createRefresh(userId) {
 
 function logAction(userId, action, detail, req) {
     const db = getDb();
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+    const ip = req.ip || '';
     const ua = req.headers['user-agent'] || '';
     db.prepare('INSERT INTO audit_log (user_id, action, detail, ip, ua) VALUES (?, ?, ?, ?, ?)').run(userId, action, detail, ip, ua);
 }

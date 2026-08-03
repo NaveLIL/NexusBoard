@@ -1,9 +1,25 @@
 // lightweight particles on login screen
+let currentRaf = null;
+let currentResizeHandler = null;
+
+function stopParticles() {
+    if (currentRaf) {
+        cancelAnimationFrame(currentRaf);
+        currentRaf = null;
+    }
+    if (currentResizeHandler) {
+        window.removeEventListener('resize', currentResizeHandler);
+        currentResizeHandler = null;
+    }
+}
+
 function initParticles() {
     const canvas = document.getElementById('particle-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    let w, h, dots = [], raf;
+    let w, h, dots = [];
+
+    stopParticles();
 
     function resize() {
         w = canvas.width = window.innerWidth;
@@ -53,13 +69,15 @@ function initParticles() {
                 }
             }
         }
-        raf = requestAnimationFrame(draw);
+        currentRaf = requestAnimationFrame(draw);
     }
 
     resize();
     createDots();
     draw();
-    window.addEventListener('resize', () => { resize(); createDots(); });
 
-    return () => { cancelAnimationFrame(raf); };
+    currentResizeHandler = () => { resize(); createDots(); };
+    window.addEventListener('resize', currentResizeHandler);
+
+    return stopParticles;
 }

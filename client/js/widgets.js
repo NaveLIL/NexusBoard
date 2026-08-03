@@ -1,12 +1,16 @@
 let widgetTimer = null;
 
 function startWidgets() {
+    stopWidgets();
     updateWidgets();
     widgetTimer = setInterval(updateWidgets, 5000);
 }
 
 function stopWidgets() {
-    if (widgetTimer) clearInterval(widgetTimer);
+    if (widgetTimer) {
+        clearInterval(widgetTimer);
+        widgetTimer = null;
+    }
 }
 
 async function updateWidgets() {
@@ -14,13 +18,13 @@ async function updateWidgets() {
         const data = await api.get('/system');
         if (data.error) return;
 
-        setRing('widget-cpu', data.cpu.usage, `${data.cpu.usage}%`);
+        setRing('widget-cpu', data.cpu.usage);
         document.getElementById('cpu-val').textContent = `${data.cpu.usage}%`;
 
-        setRing('widget-ram', data.memory.percent, `${data.memory.percent}%`);
+        setRing('widget-ram', data.memory.percent);
         document.getElementById('ram-val').textContent = `${data.memory.percent}%`;
 
-        setRing('widget-disk', data.disk.percent, `${data.disk.percent}%`);
+        setRing('widget-disk', data.disk.percent);
         document.getElementById('disk-val').textContent = `${data.disk.percent}%`;
 
         document.getElementById('uptime-val').textContent = data.uptime.formatted;
@@ -32,7 +36,7 @@ async function updateWidgets() {
     } catch {}
 }
 
-function setRing(widgetId, percent, label) {
+function setRing(widgetId, percent) {
     const widget = document.getElementById(widgetId);
     if (!widget) return;
     const fill = widget.querySelector('.ring-fill');
